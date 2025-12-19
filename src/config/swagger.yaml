@@ -1,0 +1,122 @@
+/**
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+openapi: 3.0.0
+info:
+  title: Smart Management System API
+  description: API for managing generic operations (Users, Departments, Assets, Activities)
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/api
+tags:
+  - name: Auth
+  - name: Users
+  - name: Departments
+  - name: Assets
+  - name: Activities
+paths:
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                role:
+                    type: string
+                    enum: [staff, admin]
+      responses:
+        201:
+          description: Created
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: Success
+  /auth/me:
+    get:
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      summary: Get current user
+      responses:
+        200:
+          description: Success
+  /assets:
+    get:
+      tags: [Assets]
+      security:
+        - bearerAuth: []
+      summary: Get all assets (supports filtering, sorting, pagination)
+      parameters:
+        - in: query
+          name: select
+          schema:
+            type: string
+        - in: query
+          name: sort
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Success
+    post:
+      tags: [Assets]
+      security:
+        - bearerAuth: []
+      summary: Create new asset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, category, departmentId]
+              properties:
+                name:
+                  type: string
+                category:
+                  type: string
+                departmentId:
+                  type: string
+                status:
+                  type: string
+                  enum: [available, used, maintenance]
+      responses:
+        201:
+          description: Created
